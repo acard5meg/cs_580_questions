@@ -177,20 +177,24 @@ def backtrack_search(csp, print_steps = False, start = 'A'):
                 if new_class.remove_colors_from_neighbors(curr_country):
                     stack.append(new_class)
         
-                if print_steps:
-                    # print(f"STACK ELEMENTS: {current_iteration}")
-                    print(f"STACK ELEMENTS")
-                    print()
-                    new_class.current_assignment()
-                    print()
-                    for i in new_class.get_countries():
-                        if new_class.is_colored(i):
-                            continue
-                        else:
-                            print(f"Domain and degree of {i}: ", end='')
-                            print(f"{new_class.get_domain(i)}, ", end='')
-                            print(f"{new_class.get_degree_of_unassigned(i)}")
-                    print()
+        if print_steps:
+            # print(f"STACK ELEMENTS: {current_iteration}")
+            print("Current country and assignment")
+            print(curr_country)
+            curr_class.current_assignment()
+            print(f"STACK ELEMENTS")
+            for n_c in stack:
+                print()
+                n_c.current_assignment()
+                print()
+                for i in n_c.get_countries():
+                    if n_c.is_colored(i):
+                        continue
+                    else:
+                        print(f"Domain and degree of {i}: ", end='')
+                        print(f"{n_c.get_domain(i)}, ", end='')
+                        print(f"{n_c.get_degree_of_unassigned(i)}")
+                print()
         # current_iteration += 1
 
 def main():
