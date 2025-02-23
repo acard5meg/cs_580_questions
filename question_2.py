@@ -127,6 +127,40 @@ class Exercise2:
 
         return True
 
+    def is_colorable(self, curr_country):
+
+        if not self.remove_colors_from_neighbors(curr_country):
+            return False
+        
+        q = deque()
+
+        for neighbor in self.get_connections(curr_country):
+            q.append((curr_country, neighbor))
+
+        while q:
+            c1, c2 = q.popleft()
+            if self.__revise(c1,c2):
+                if self.get_domain_size(c1) == 0:
+                    return False
+                else:
+                    for neighbors in self.get_connections(c1):
+                        if neighbors != c2:
+                            q.append((neighbors, c1))
+        return True
+
+
+    def __revise(self, country1, country2):
+
+        revised = False
+
+        for colors_x in self.get_domain(country1):
+            c2_domain = self.get_domain(country2)
+            if colors_x in c2_domain and len(c2_domain) == 1:
+                self.remove_color_from_domain(country1, colors_x)
+                revised = True
+
+        return revised
+
 
     def is_complete_assignment(self):
         return True if  len(self.map) == len(self.colors) else False
@@ -158,6 +192,8 @@ def backtrack_search(csp, print_steps = False, start = 'A'):
     # pdb.set_trace()
     stack.append(copy.deepcopy(csp))
 
+    previous = set()
+
     while stack:
 
         curr_class = stack.pop()
@@ -174,16 +210,21 @@ def backtrack_search(csp, print_steps = False, start = 'A'):
             if new_class.is_valid_assignment(curr_country, curr_color):
                 new_class.color(curr_country, curr_color)
 
-                if new_class.remove_colors_from_neighbors(curr_country):
+                # if new_class.remove_colors_from_neighbors(curr_country):
+                if new_class.is_colorable(curr_country):
                     stack.append(new_class)
         
         if print_steps:
+            new_set = set()
             # print(f"STACK ELEMENTS: {current_iteration}")
             print("Current country and assignment")
             print(curr_country)
             curr_class.current_assignment()
             print(f"STACK ELEMENTS")
             for n_c in stack:
+                new_set.add(n_c)
+                if n_c in previous:
+                    continue
                 print()
                 n_c.current_assignment()
                 print()
@@ -195,6 +236,7 @@ def backtrack_search(csp, print_steps = False, start = 'A'):
                         print(f"{n_c.get_domain(i)}, ", end='')
                         print(f"{n_c.get_degree_of_unassigned(i)}")
                 print()
+            previous = new_set.copy()
         # current_iteration += 1
 
 def main():
