@@ -32,19 +32,63 @@ class Exercise1:
         return cost
     
     def tsp(self, path):
-        diff_iters = itertools.permutations(path[1:len(path)-1], len(path[1:len(path)-1]))
-        min_weight = self.path_cost(path)
-        min_path = path
+        # diff_iters = itertools.permutations(path[1:len(path)-1], len(path[1:len(path)-1]))
+        # min_weight = self.path_cost(path)
+        # min_path = path
         
-        path_start = [path[0]]
+        # path_start = [path[0]]
 
-        for curr_middle in diff_iters:
-            new_path = path_start + list(curr_middle) + path_start
-            cost = self.path_cost(new_path)
-            print(f"Path and cost: {new_path}, {cost}")
-            if cost < min_weight:
-                min_weight = cost
-                min_path = tuple(new_path.copy())
+        # for curr_middle in diff_iters:
+        #     new_path = path_start + list(curr_middle) + path_start
+        #     cost = self.path_cost(new_path)
+        #     print(f"Path and cost: {new_path}, {cost}")
+        #     if cost < min_weight:
+        #         min_weight = cost
+        #         min_path = tuple(new_path.copy())
+
+        # return min_weight, min_path
+        all_idx = [i for i in range(1, len(path)-1)]
+        # diff_iters = itertools.permutations(path[1:len(path)-1], 2)
+        # diff_iters = itertools.permutations(all_idx, 2)
+        min_weight = self.path_cost(path)
+        min_path = list(path)
+        prevoius_weight = min_weight + 1
+        
+        # path_start = [path[0]]
+
+        iterations = 0
+        while min_weight < prevoius_weight:
+            prevoius_weight = min_weight
+            print(f"Current path and cost: {min_path}, {min_weight}")
+            temp_weight, temp_path = min_weight, min_path.copy()
+            iterations += 1
+            # for curr_middle in diff_iters:
+            for curr_middle in itertools.permutations(all_idx, 2):
+                # pdb.set_trace()
+                # new_path = path_start + list(curr_middle) + path_start
+
+                if curr_middle[0] > curr_middle[1]:
+                    continue
+                new_path = min_path[:curr_middle[0]] + [min_path[curr_middle[1]]]
+
+                if len(min_path[curr_middle[0]+1 : curr_middle[1]]) > 0:
+                    new_path = new_path + min_path[curr_middle[0]+1 : curr_middle[1]]
+
+                new_path = new_path + [min_path[curr_middle[0]]] + min_path[curr_middle[1]+1 : ]
+
+                cost = self.path_cost(new_path)
+
+                # print(f"New path and cost: {new_path}, {cost}")
+                # if cost < min_weight:
+                #     min_weight = cost
+                #     # min_path = tuple(new_path.copy())
+                #     min_path = new_path.copy()
+                if cost < temp_weight:
+                    temp_weight = cost
+                    # min_path = tuple(new_path.copy())
+                    temp_path = new_path.copy()
+            print(f"Iteration: {iterations} path and cost: {temp_path}, {temp_weight}\n")
+            min_weight, min_path = temp_weight, temp_path 
 
         return min_weight, min_path
 
@@ -72,6 +116,9 @@ def main():
 
     # pdb.set_trace()
     print(ex1.tsp(path))
+
+    # for i in itertools.permutations([1,2,3,4,5], 2):
+    #     print(i)
     # print("DONE")
 
 if __name__ == "__main__":
