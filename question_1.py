@@ -57,9 +57,10 @@ class Exercise1:
         # path_start = [path[0]]
 
         iterations = 0
+        past_paths = {tuple(path)}
         while min_weight < prevoius_weight:
             prevoius_weight = min_weight
-            print(f"Current path and cost: {min_path}, {min_weight}")
+            print(f"Current path and cost: {min_path}, {min_weight}\n")
             temp_weight, temp_path = min_weight, min_path.copy()
             iterations += 1
             # for curr_middle in diff_iters:
@@ -69,6 +70,13 @@ class Exercise1:
 
                 if curr_middle[0] > curr_middle[1]:
                     continue
+                
+                temp_set = {curr_middle[0]-1, curr_middle[0], curr_middle[1]-1, curr_middle[1]}
+                
+                
+                if len(temp_set) == 3:
+                    continue
+
                 new_path = min_path[:curr_middle[0]] + [min_path[curr_middle[1]]]
 
                 if len(min_path[curr_middle[0]+1 : curr_middle[1]]) > 0:
@@ -76,9 +84,11 @@ class Exercise1:
 
                 new_path = new_path + [min_path[curr_middle[0]]] + min_path[curr_middle[1]+1 : ]
 
+                if tuple(new_path) in past_paths:
+                    continue
                 cost = self.path_cost(new_path)
 
-                # print(f"New path and cost: {new_path}, {cost}")
+                print(f"Possible path and cost: {new_path}, {cost}")
                 # if cost < min_weight:
                 #     min_weight = cost
                 #     # min_path = tuple(new_path.copy())
@@ -89,6 +99,7 @@ class Exercise1:
                     temp_path = new_path.copy()
             print(f"Iteration: {iterations} path and cost: {temp_path}, {temp_weight}\n")
             min_weight, min_path = temp_weight, temp_path 
+            past_paths.add(tuple(min_path))
 
         return min_weight, min_path
 
